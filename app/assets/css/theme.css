@@ -1,0 +1,28 @@
+:root {
+  --bg-default: #f5f6fb;
+  --bg-sub: #eceffd;
+  --bg-popup-color: #ffffff;
+  --bg-hover: #e4e9fb;
+  --font-default: #1b1221;
+  --font-gray: #5f5b67;
+  --font-white: #fdfdff;
+  --white: #ffffff;
+}
+
+html.dark {
+  --bg-default: #1e1e1e;
+  --bg-sub: #2a2a2a;
+  --bg-popup-color: #252525;
+  --bg-hover: #1f2937;
+  --font-default: rgba(255, 255, 255, 0.87);
+  --white: #FCF9FA;
+  --gray: #383335;
+  --surface: #141a2a;
+  --border: #505050;
+  --outline: #3f3f3f;
+  --brand: #a78bfa;
+}
+
+* {
+  transition: background-color 0.5s ease, color 0.5s ease;
+}

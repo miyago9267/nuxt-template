@@ -1,0 +1,170 @@
+stages:
+  - unit-test
+  - build-testing
+  - deploy-testing
+  - build-stage
+  - deploy-stage
+  - e2e
+  - build-production
+  - deploy-production
+
+variables:
+  NODE_ENV: "production"
+  COREPACK_ENABLE_DOWNLOAD_PROMPT: "0"
+  YARN_CACHE_FOLDER: ".cache/yarn"
+
+cache:
+  key:
+    files:
+      - yarn.lock
+      - package.json
+  paths:
+    - node_modules/
+    - .nuxt/
+    - .cache/yarn
+  policy: pull-push
+
+.default_yarn_job:
+  image: node:20.19.0
+  before_script:
+    - corepack enable
+    - corepack prepare yarn@1.22.22 --activate
+    - yarn --version
+    - yarn install --frozen-lockfile
+
+.nuxt_build_job:
+  extends: .default_yarn_job
+  script:
+    - if [ -n "${DOTENV_FILE:-}" ] && [ -f "${DOTENV_FILE}" ]; then cp "${DOTENV_FILE}" .env; fi
+    - yarn build
+    - rm -f .env || true
+  artifacts:
+    paths:
+      - .output/
+    expire_in: 1 week
+
+.deploy_testing:
+  stage: deploy-testing
+  only:
+    - merge_requests
+    - master
+  trigger: itrd/argocd
+
+.deploy_stage:
+  stage: deploy-stage
+  only:
+    - merge_requests
+    - master
+  trigger: itrd/argocd
+
+.deploy_production:
+  stage: deploy-production
+  only:
+    - tags
+  except:
+    - branches
+  trigger: itrd/argocd
+
+.E2E_testing:
+  extends: .default_yarn_job
+  stage: e2e
+  when: manual
+  only:
+    - merge_requests
+    - master
+  image:
+    name: cypress/browsers:node20.9.0-chrome118-1-ff117
+    entrypoint: [""]
+  tags:
+    - pms
+  script:
+    - yarn test --type e2e || echo "No dedicated e2e tests configured"
+  artifacts:
+    paths:
+      - e2e/artifacts
+    when: on_failure
+    expire_in: 1 week
+
+test_job:
+  extends: .default_yarn_job
+  stage: unit-test
+  only:
+    - merge_requests
+  tags:
+    - pms
+  script:
+    - yarn lint
+    - yarn test
+
+.build_testing:
+  extends: .nuxt_build_job
+  stage: build-testing
+  when: manual
+  needs: []
+  only:
+    - merge_requests
+    - master
+  tags:
+    - autoscaler
+
+.build_stage:
+  extends: .nuxt_build_job
+  stage: build-stage
+  when: manual
+  needs: []
+  only:
+    - merge_requests
+    - master
+  tags:
+    - autoscaler
+
+.build_production:
+  extends: .nuxt_build_job
+  stage: build-production
+  cache: {} # disable shared cache for tagged releases
+  only:
+    - tags
+  except:
+    - branches
+  tags:
+    - autoscaler
+
+正式站1:
+  variables:
+    DOTENV_FILE: ".env.production"
+  extends: .build_production
+
+測試站1:
+  variables:
+    DOTENV_FILE: ".env.testing"
+    IMAGE_ENV: "testing"
+  extends: .build_testing
+
+Stage1:
+  variables:
+    DOTENV_FILE: ".env.stage"
+    IMAGE_ENV: "stage"
+  extends: .build_stage
+
+Deploy-Stage1:
+  variables:
+    UPSTREAM_SHA: "${CI_COMMIT_SHORT_SHA}"
+    UPSTREAM_GCP_IMAGE_PREFIX: "${gcp_image_prefix}"
+    UPSTREAM_PROJECT_NAME: "${CI_PROJECT_NAME}-stage"
+  extends: .deploy_stage
+  needs: ["Stage1"]
+
+Deploy-正式站1:
+  variables:
+    UPSTREAM_SHA: "${CI_COMMIT_TAG}"
+    UPSTREAM_GCP_IMAGE_PREFIX: "${gcp_image_prefix}"
+    UPSTREAM_PROJECT_NAME: "${CI_PROJECT_NAME}"
+    DEPLOY_PMS_OTHER: "true"
+  extends: .deploy_production
+  needs:
+    - 正式站1
+
+E2E-Stage1:
+  variables:
+    CYPRESS_ENV: "${CI_PROJECT_DIR}/envs/itrd-cypress.env.json"
+  extends: .E2E_testing
