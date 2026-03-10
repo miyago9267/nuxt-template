@@ -129,42 +129,44 @@ test_job:
   tags:
     - autoscaler
 
-正式站1:
-  variables:
-    DOTENV_FILE: ".env.production"
-  extends: .build_production
+# --- Build Jobs (uncomment and rename as needed) ---
 
-測試站1:
-  variables:
-    DOTENV_FILE: ".env.testing"
-    IMAGE_ENV: "testing"
-  extends: .build_testing
+# production-build:
+#   variables:
+#     DOTENV_FILE: ".env.production"
+#   extends: .build_production
 
-Stage1:
-  variables:
-    DOTENV_FILE: ".env.stage"
-    IMAGE_ENV: "stage"
-  extends: .build_stage
+# testing-build:
+#   variables:
+#     DOTENV_FILE: ".env.testing"
+#     IMAGE_ENV: "testing"
+#   extends: .build_testing
 
-Deploy-Stage1:
-  variables:
-    UPSTREAM_SHA: "${CI_COMMIT_SHORT_SHA}"
-    UPSTREAM_GCP_IMAGE_PREFIX: "${gcp_image_prefix}"
-    UPSTREAM_PROJECT_NAME: "${CI_PROJECT_NAME}-stage"
-  extends: .deploy_stage
-  needs: ["Stage1"]
+# stage-build:
+#   variables:
+#     DOTENV_FILE: ".env.stage"
+#     IMAGE_ENV: "stage"
+#   extends: .build_stage
 
-Deploy-正式站1:
-  variables:
-    UPSTREAM_SHA: "${CI_COMMIT_TAG}"
-    UPSTREAM_GCP_IMAGE_PREFIX: "${gcp_image_prefix}"
-    UPSTREAM_PROJECT_NAME: "${CI_PROJECT_NAME}"
-    DEPLOY_PMS_OTHER: "true"
-  extends: .deploy_production
-  needs:
-    - 正式站1
+# --- Deploy Jobs (uncomment and rename as needed) ---
 
-E2E-Stage1:
-  variables:
-    CYPRESS_ENV: "${CI_PROJECT_DIR}/envs/itrd-cypress.env.json"
-  extends: .E2E_testing
+# deploy-stage:
+#   variables:
+#     UPSTREAM_SHA: "${CI_COMMIT_SHORT_SHA}"
+#     UPSTREAM_GCP_IMAGE_PREFIX: "${gcp_image_prefix}"
+#     UPSTREAM_PROJECT_NAME: "${CI_PROJECT_NAME}-stage"
+#   extends: .deploy_stage
+#   needs: ["stage-build"]
+
+# deploy-production:
+#   variables:
+#     UPSTREAM_SHA: "${CI_COMMIT_TAG}"
+#     UPSTREAM_GCP_IMAGE_PREFIX: "${gcp_image_prefix}"
+#     UPSTREAM_PROJECT_NAME: "${CI_PROJECT_NAME}"
+#   extends: .deploy_production
+#   needs: ["production-build"]
+
+# --- E2E Jobs (uncomment and rename as needed) ---
+
+# e2e-stage:
+#   extends: .E2E_testing

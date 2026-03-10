@@ -19,7 +19,7 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
       ],
       noscript: [{ innerHTML: 'Javascript is required.' }],
-      title: 'Nuxt 4 Starter',
+      title: 'Nuxt 4 Template',
     },
     keepalive: true,
     baseURL: process.env.BASE_URL || '/',
@@ -33,9 +33,6 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    // 私有配置 (僅服務器端可用)
-    DBConnectUrl: process.env.DB_CONNECT_URL,
-
     // 公共配置 (客戶端和服務器端都可用)
     BASE_URL: process.env.BASE_URL,
 

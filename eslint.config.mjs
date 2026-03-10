@@ -1,5 +1,4 @@
 // Nuxt 4 ESLint config
-// Nuxt 4 ESLint config – tailored to Miyago's style (TS uses tabs, semicolons, relaxed Vue rules)
 import { createConfigForNuxt } from '@nuxt/eslint-config'
 import globals from 'globals'
 import jestPlugin from 'eslint-plugin-jest'
