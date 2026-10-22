@@ -29,6 +29,7 @@
   "devDependencies": {
     "@iconify-json/lucide": "^1.2.66",
     "eslint": "^9.0.0",
+    "globals": "^17.13.0",
     "happy-dom": "^18.0.1",
     "stylelint": "^16.23.1",
     "stylelint-config-standard": "^39.0.0",
