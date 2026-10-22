@@ -28,7 +28,7 @@ jobs:
           corepack enable
           corepack prepare yarn@1.22.22 --activate
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --frozen-lockfile --production=false
       - name: Run ESLint
         run: yarn lint
 
