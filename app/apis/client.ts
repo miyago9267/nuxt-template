@@ -50,7 +50,9 @@ export class ApiClient {
     let url = endpoint
     if (params) {
       const query = new URLSearchParams(params as Record<string, string>).toString()
-      if (query) url += `?${query}`
+      if (query) {
+        url += `?${query}`
+      }
     }
     return this.request<T>(url)
   }

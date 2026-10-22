@@ -1,7 +1,6 @@
 // Nuxt 4 ESLint config
 import { createConfigForNuxt } from '@nuxt/eslint-config'
 import globals from 'globals'
-import jestPlugin from 'eslint-plugin-jest'
 
 export default createConfigForNuxt(
   {
@@ -11,9 +10,6 @@ export default createConfigForNuxt(
   },
   {
     name: 'public/rules',
-    plugins: {
-      jest: jestPlugin,
-    },
     languageOptions: {
       globals: {
         ...globals.jest,
@@ -34,15 +30,14 @@ export default createConfigForNuxt(
       'no-console': 'error',
       'no-alert': 'off',
       'no-bitwise': 'off',
-      camelcase: 'error',
-      curly: 'error',
-      eqeqeq: 'off',
+      'camelcase': 'error',
+      'curly': 'error',
+      'eqeqeq': 'off',
       'no-eq-null': 'error',
       'no-empty': 'error',
-      'brace-style': 'error',
       'comma-spacing': 'error',
       'comma-style': 'error',
-      indent: ['error', 2],
+      'indent': ['error', 2],
       'key-spacing': 'error',
       'keyword-spacing': 'error',
       'arrow-spacing': 'error',
