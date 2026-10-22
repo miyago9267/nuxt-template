@@ -1,4 +1,4 @@
-FROM node:20.19.0 AS build-stage
+FROM node:24.22.1 AS build-stage
 
 WORKDIR /app
 
@@ -24,7 +24,7 @@ RUN if [ -f ./bun.lock ]; then \
 	npm run build; \
 	fi
 
-FROM node:20.19.0-alpine AS production-stage
+FROM node:24.22.1-alpine AS production-stage
 
 WORKDIR /app
 
